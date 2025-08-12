@@ -2,14 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use App\Livewire\Dashboard\DashboardOverview;
+use App\Livewire\Dashboard\DashboardView;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
+// Dashboard Overview Page - shows all dashboards
+Route::get('/dashboard', DashboardOverview::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+// Individual Dashboard View - shows specific dashboard by UUID
+Route::get('/dashboards/{dashboard}', DashboardView::class)
+    ->middleware(['auth', 'verified'])
+    ->name('dashboards.show');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
