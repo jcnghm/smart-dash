@@ -4,12 +4,16 @@ namespace App\Livewire\Dashboard;
 
 use Livewire\Component;
 use App\Models\Dashboard;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\{Auth, Log};
+use App\Services\ApiService;
+
 
 class DashboardOverview extends Component
 {
     public $dashboards;
+    public $apiResponse = null;
+    public $apiError = null;
 
     public function mount()
     {
@@ -67,6 +71,34 @@ class DashboardOverview extends Component
             $this->loadDashboards();
             $this->dispatch('dashboard-deleted');
         }
+    }
+
+    public function testApiEndpoint()
+    {
+        try {
+            $this->clearApiResponse();
+
+            $client = new ApiService();
+
+            $response = $client->getApiHealthCheck();
+
+            if ($response['success'] ?? null) {
+                $this->apiResponse = $response['message'];
+            } else {
+                $this->apiError = "API returned status code: {$response->status()}";
+                Log::error('API Error', ['status' => $response->status(), 'body' => $response->body()]);
+            }
+
+        } catch (\Exception $e) {
+            $this->apiError = "Failed to connect to API: " . $e->getMessage();
+            Log::error('API Exception', ['error' => $e->getMessage()]);
+        }
+    }
+
+    public function clearApiResponse()
+    {
+        $this->apiResponse = null;
+        $this->apiError = null;
     }
 
     public function render()

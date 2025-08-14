@@ -25,6 +25,7 @@
 
 
         <div class="max-w-[335px] w-full flex flex-col items-center gap-6">
+            <flux:icon name="bolt" class="w-8 h-8" style="color: #dc2626 !important;" />
             <!-- App Name -->
             <h1
                 class="text-3xl font-semibold dark:text-[#EDEDEC] text-[#1b1b18] select-none"

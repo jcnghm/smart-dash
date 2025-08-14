@@ -6,7 +6,74 @@
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">My Dashboards</h1>
             <p class="text-gray-600 dark:text-gray-400 mt-1">Manage and access your dashboards</p>
         </div>
+
+        <div class="flex items-center gap-3">
+            {{-- API Test Button --}}
+            <button 
+                wire:click="testApiEndpoint"
+                wire:loading.attr="disabled"
+                class="inline-flex justify-center items-center px-6 py-3 bg-green-600 border border-transparent rounded-full text-sm font-semibold text-white uppercase tracking-widest hover:bg-green-700 hover:shadow-lg hover:scale-105 active:bg-green-800 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-200 shadow-md"
+            >
+                <div wire:loading wire:target="testApiEndpoint" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <svg wire:loading.remove wire:target="testApiEndpoint" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <span wire:loading.remove wire:target="testApiEndpoint">Test API</span>
+                <span wire:loading wire:target="testApiEndpoint">Loading...</span>
+            </button>
+
+            {{-- Create Dashboard Button --}}
+            <button 
+                wire:click="createNewDashboard"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 font-medium shadow-md"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                New Dashboard
+            </button>
+        </div>
     </div>
+
+    {{-- API Response Display --}}
+    @if($apiResponse)
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    API Response
+                </h3>
+                <button 
+                    wire:click="clearApiResponse"
+                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            @if($apiError)
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="text-sm font-medium text-red-800 dark:text-red-200">Error</h4>
+                            <p class="text-sm text-red-700 dark:text-red-300 mt-1">{{ $apiError }}</p>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 max-h-96 overflow-auto">
+                    <pre class="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{{ json_encode($apiResponse, JSON_PRETTY_PRINT) }}</pre>
+                </div>
+            @endif
+        </div>
+    @endif
 
     {{-- Quick Stats --}}
     @if($dashboards->isNotEmpty())
