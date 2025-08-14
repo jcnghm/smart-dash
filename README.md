@@ -1,4 +1,4 @@
-# Smart Dash
+# Smart Dash ⚡
 
 A powerful and intuitive dashboard builder built with Laravel
 
