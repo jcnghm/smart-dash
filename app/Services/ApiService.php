@@ -2,16 +2,20 @@
 
 namespace App\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Arr;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 
 class ApiService
 {
     protected $client;
 
     protected $token;
+
+    protected $connectionFailed;
 
     const CACHE_KEY = 'api_token';
 
@@ -24,21 +28,7 @@ class ApiService
         $this->token = $this->getAccessToken();
     }
 
-    public function getApiHealthCheck()
-    {
-        if (!$this->token) {
-            throw new \Exception('API token not available');
-        }
-
-        $response = $this->client->get('health', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->token
-            ]
-        ]);
-
-        return json_decode($response->getBody(), true);
-    }
-
+    
     public function getAccessToken()
     {
         $token = Cache::get(self::CACHE_KEY);
@@ -58,24 +48,83 @@ class ApiService
         return $token;
     }
 
-    public function get($endpoint, $params = [])
+    public function getApiHealthCheck()
     {
-        try {
-            $response = $this->client->get($endpoint, ['query' => $params]);
-            return json_decode($response->getBody(), true);
-        } catch (RequestException $e) {
-            // Handle error
-            throw $e;
+        if (!$this->token) {
+            throw new Exception('Token Unavailable.');
         }
+    
+        $options = [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->token
+            ]
+        ];
+    
+        $result = $this->get('health', [], $options);
+        
+        if (!empty($result['success'])) {
+            $result['message'] = $result['data'];
+        }
+        
+        return $result;
     }
 
-    public function post($endpoint, $data = [])
+    public function get($endpoint, $params = [], $options = [])
+    {
+        if (!empty($params)) {
+            $options['query'] = $params;
+        }
+        
+        return $this->makeRequest('GET', $endpoint, $options);
+    }
+    
+    public function post($endpoint, $data = [], $options = [])
+    {
+        if (!empty($data)) {
+            $options['json'] = $data; // or 'form_params' if your API expects form data
+        }
+        
+        return $this->makeRequest('POST', $endpoint, $options);
+    }
+
+    private function makeRequest($method, $endpoint, $options = [])
     {
         try {
-            $response = $this->client->post($endpoint, ['json' => $data]);
-            return json_decode($response->getBody(), true);
+            $defaultOptions = [
+                'timeout' => 10,
+                'connect_timeout' => 5
+            ];
+            
+            $options = array_merge($defaultOptions, $options);
+            
+            $response = $this->client->request($method, $endpoint, $options);
+            
+            return [
+                'success' => true,
+                'data' => json_decode($response->getBody(), true)
+            ];
+            
+        } catch (ConnectException $e) {
+            return [
+                'success' => false,
+                'message' => 'Cannot connect to API server. Please ensure the API server is running.',
+                'error' => $e->getMessage()
+            ];
+            
         } catch (RequestException $e) {
-            throw $e;
+            return [
+                'success' => false,
+                'message' => 'API request failed',
+                'status' => $e->hasResponse() ? $e->getResponse()->getStatusCode() : null,
+                'error' => $e->getMessage()
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'API error occurred',
+                'error' => $e->getMessage()
+            ];
         }
     }
 }
