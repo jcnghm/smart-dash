@@ -75,23 +75,19 @@ class DashboardOverview extends Component
 
     public function testApiEndpoint()
     {
-        try {
-            $this->clearApiResponse();
-
-            $client = new ApiService();
-
-            $response = $client->getApiHealthCheck();
-
-            if ($response['success'] ?? null) {
-                $this->apiResponse = $response['message'];
-            } else {
-                $this->apiError = "API returned status code: {$response->status()}";
-                Log::error('API Error', ['status' => $response->status(), 'body' => $response->body()]);
-            }
-
-        } catch (\Exception $e) {
-            $this->apiError = "Failed to connect to API: " . $e->getMessage();
-            Log::error('API Exception', ['error' => $e->getMessage()]);
+        $this->clearApiResponse();
+    
+        $client = new ApiService();
+        $response = $client->getApiHealthCheck();
+    
+        if ($response['success']) {
+            $this->apiResponse = $response['message'];
+            $this->apiError = null;
+            Log::info('Set SUCCESS', ['apiResponse' => $this->apiResponse]);
+        } else {
+            $this->apiError = $response['message'];
+            $this->apiResponse = null;
+            Log::info('Set ERROR', ['apiError' => $this->apiError]);
         }
     }
 

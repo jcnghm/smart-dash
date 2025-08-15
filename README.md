@@ -33,7 +33,7 @@ A powerful and intuitive dashboard builder built with Laravel
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/smart-dash.git
+   git clone https://github.com/jcnghm/smart-dash.git
    cd smart-dash
    ```
 
