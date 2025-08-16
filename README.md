@@ -1,31 +1,6 @@
-# Smart Dash ⚡
+# Smart Dash
 
 A powerful and intuitive dashboard builder built with Laravel
-
-## Features
-
-### Dashboard Management
-- **Visual Dashboard Builder** - Drag-and-drop interface for creating custom layouts
-- **Multiple Dashboard Support** - Create and manage unlimited dashboards
-- **Public/Private Dashboards** - Control visibility and sharing permissions
-- **Real-time Preview** - See your changes instantly as you build
-
-### Widget Library
-- **Charts & Graphs** - Interactive charts powered by modern visualization libraries
-- **Data Tables** - Sortable, filterable data displays
-- **Metrics & KPIs** - Display key performance indicators with custom styling
-- **Text Widgets** - Rich text content and notes
-- **Custom Widgets** - Extensible widget system for custom components
-
-### User Experience
-- **Responsive Design** - Works perfectly on desktop, tablet, and mobile
-- **Dark/Light Mode** - Automatic theme switching
-- **Real-time Updates** - Live data updates using Laravel Broadcasting
-- **Fast Performance** - Optimized for speed with caching and lazy loading
-
-### Security & Access
-- **User Authentication** - Secure login and registration system
-- **Role-based Permissions** - Control who can view and edit dashboards
 
 ## Quick Start
 
