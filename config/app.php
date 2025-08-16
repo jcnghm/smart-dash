@@ -122,7 +122,4 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
-
-    'api_base_url' => env('API_BASE_URL', 'http://host.docker.internal:8080/'),
-
 ];

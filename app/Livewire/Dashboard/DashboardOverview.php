@@ -5,10 +5,8 @@ namespace App\Livewire\Dashboard;
 use Livewire\Component;
 use App\Models\Dashboard;
 use Illuminate\Support\Str;
+use App\Services\RustServerApiClient;
 use Illuminate\Support\Facades\{Auth, Log};
-use App\Services\ApiService;
-
-
 class DashboardOverview extends Component
 {
     public $dashboards;
@@ -25,25 +23,6 @@ class DashboardOverview extends Component
         $this->dashboards = Dashboard::where('user_id', Auth::id())
             ->orderBy('updated_at', 'desc')
             ->get();
-        
-        // if ($this->dashboards->isEmpty()) {
-        //     $this->createDefaultDashboard();
-        //     $this->loadDashboards();
-        // }
-    }
-
-    public function createDefaultDashboard()
-    {
-        Dashboard::create([
-            'user_id' => Auth::id(),
-            'uuid' => Str::uuid(),
-            'name' => 'My First Dashboard',
-            'description' => 'Welcome to your first dashboard!',
-            'is_public' => false,
-            'grid_config' => ['columns' => 12, 'gap' => 4]
-        ]);
-
-        $this->dispatch('dashboard-created');
     }
 
     public function createNewDashboard()
@@ -75,23 +54,25 @@ class DashboardOverview extends Component
 
     public function testApiEndpoint()
     {
+        $this->clearApiResponse();
+    
         try {
-            $this->clearApiResponse();
-
-            $client = new ApiService();
-
+            $client = new RustServerApiClient();
             $response = $client->getApiHealthCheck();
-
-            if ($response['success'] ?? null) {
+        
+            if ($response['success']) {
                 $this->apiResponse = $response['message'];
+                $this->apiError = null;
+                Log::info('Set SUCCESS', ['apiResponse' => $this->apiResponse]);
             } else {
-                $this->apiError = "API returned status code: {$response->status()}";
-                Log::error('API Error', ['status' => $response->status(), 'body' => $response->body()]);
+                $this->apiError = $response['message'];
+                $this->apiResponse = null;
+                Log::info('Set ERROR', ['apiError' => $this->apiError]);
             }
-
         } catch (\Exception $e) {
-            $this->apiError = "Failed to connect to API: " . $e->getMessage();
-            Log::error('API Exception', ['error' => $e->getMessage()]);
+            $this->apiError = $e->getMessage();
+            $this->apiResponse = null;
+            Log::error('API Exception', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         }
     }
 
