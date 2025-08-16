@@ -1,5 +1,4 @@
 <?php
-// app/Livewire/Dashboard/DashboardView.php
 
 namespace App\Livewire\Dashboard;
 
