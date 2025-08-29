@@ -1,4 +1,4 @@
-# Smart Dash ⚡
+# Smart Dash - API Testing Scaffolding ⚡
 
 A powerful and intuitive dashboard builder built with Laravel
 
