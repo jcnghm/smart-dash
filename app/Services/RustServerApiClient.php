@@ -74,4 +74,37 @@ class RustServerApiClient extends BaseApiClient
         
         return $result;
     }
+
+    public function postEmployeeData(array $data): array
+{
+    try {
+        $response = $this->client->post('employees/', [
+            'json' => $data,
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        $body = json_decode($response->getBody()->getContents(), true);
+
+        if ($statusCode >= 200 && $statusCode < 300) {
+            return [
+                'success' => true,
+                'message' => $body['message'] ?? 'Employee data pushed successfully',
+                'data' => $body['data'] ?? null,
+                'status_code' => $statusCode
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => $body['error'] ?? 'Failed to push employee data',
+                'status_code' => $statusCode
+            ];
+        }
+    } catch (\Exception $e) {
+        return [
+            'success' => false,
+            'message' => 'Unexpected error: ' . $e->getMessage(),
+            'status_code' => null
+        ];
+    }
+}
 }
