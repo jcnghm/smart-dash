@@ -8,6 +8,22 @@
         </div>
 
         <div class="flex items-center gap-3">
+            {{-- Push Employee Data Button --}}
+            <button 
+                wire:click="pushEmployeeData"
+                wire:loading.attr="disabled"
+                class="inline-flex justify-center items-center px-6 py-3 bg-green-600 border border-transparent rounded-full text-sm font-semibold text-white uppercase tracking-widest hover:bg-green-700 hover:shadow-lg hover:scale-105 active:bg-green-800 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-200 shadow-md"
+                title="Push unsynced employee records to Rust API server"
+                @if($unsyncedEmployeeCount == 0) disabled @endif
+            >
+                <div wire:loading wire:target="pushEmployeeData" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <svg wire:loading.remove wire:target="pushEmployeeData" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+                <span wire:loading.remove wire:target="pushEmployeeData">Push Employees ({{ $unsyncedEmployeeCount }})</span>
+                <span wire:loading wire:target="pushEmployeeData">Pushing...</span>
+            </button>
+
             {{-- API Test Button --}}
             <button 
                 wire:click="testApiEndpoint"
@@ -35,15 +51,43 @@
         </div>
     </div>
 
+    {{-- Job Status Display --}}
+    @if($jobStatus)
+        <div class="bg-green-900 rounded-lg border border-green-700 p-4">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    Employee Data Push Status
+                </h3>
+                <button 
+                    wire:click="clearJobStatus"
+                    class="text-green-400 hover:text-green-300 transition-colors"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-start gap-3 text-green-200">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <h4 class="text-sm font-medium text-green-300 mb-1">Processing Status</h4>
+                    <pre class="text-sm text-gray-200 whitespace-pre-wrap">{{ $jobStatus }}</pre>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- API Response Display --}}
     @if($apiResponse || $apiError)
         <div class="bg-gray-900 rounded-lg border border-gray-700 p-4">
-           
-            
-            @if($apiError)
             <div class="flex justify-between items-start mb-3">
                 <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 {{ $apiError ? 'text-red-600' : 'text-green-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     API Response
@@ -57,6 +101,8 @@
                     </svg>
                 </button>
             </div>
+            
+            @if($apiError)
                 <div class="flex items-start gap-3 text-red-300">
                     <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -67,22 +113,6 @@
                     </div>
                 </div>
             @else
-            <div class="flex justify-between items-start mb-3">
-                <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    API Response
-                </h3>
-                <button 
-                    wire:click="clearApiResponse"
-                    class="text-gray-400 hover:text-gray-300 transition-colors"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
                 <div class="bg-black rounded-lg p-4 max-h-96 overflow-auto">
                     <pre class="text-sm text-gray-200 whitespace-pre-wrap">{{ json_encode($apiResponse, JSON_PRETTY_PRINT) }}</pre>
                 </div>
@@ -92,7 +122,7 @@
 
     {{-- Quick Stats --}}
     @if($dashboards->isNotEmpty())
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-gray-900 rounded-lg border border-gray-700 p-4">
                 <div class="flex items-center">
                     <div class="p-2 bg-red-900/30 rounded-lg">
@@ -111,12 +141,12 @@
                 <div class="flex items-center">
                     <div class="p-2 bg-red-900/30 rounded-lg">
                         <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-400">Total Widgets</p>
-                        <p class="text-2xl font-semibold text-white">{{ $dashboards->sum(function($d) { return $d->widgets->count(); }) }}</p>
+                        <p class="text-sm font-medium text-gray-400">Total Employees</p>
+                        <p class="text-2xl font-semibold text-white">{{ $employeeStats['total'] }}</p>
                     </div>
                 </div>
             </div>
@@ -125,17 +155,15 @@
                 <div class="flex items-center">
                     <div class="p-2 bg-red-900/30 rounded-lg">
                         <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-400">Public Dashboards</p>
-                        <p class="text-2xl font-semibold text-white">{{ $dashboards->where('is_public', true)->count() }}</p>
+                        <p class="text-sm font-medium text-gray-400">Unsynced</p>
+                        <p class="text-2xl font-semibold text-white">{{ $employeeStats['unsynced'] }}</p>
                     </div>
                 </div>
             </div>
-        </div>
     @endif
 
     {{-- Dashboards Grid --}}
@@ -324,19 +352,103 @@
             </div>
         @endforelse
     </div>
+
+    {{-- Employee Data Section --}}
+    <div class="bg-gray-900 rounded-lg border border-gray-700 p-6">
+        {{-- Employee Management Header --}}
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="p-2 bg-blue-900/30 rounded-lg">
+                    <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-xl font-semibold text-white">Employee Data</h3>
+                    <p class="text-sm font-medium text-gray-400">
+                        Total: {{ $employeeStats['total'] }} | 
+                        Synced: {{ $employeeStats['synced'] }} | 
+                        Unsynced: {{ $employeeStats['unsynced'] }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Employee Table --}}
+        @if(isset($employees) && $employees->count() > 0)
+            <div class="overflow-x-auto rounded-lg border border-gray-700">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-800">
+                        <tr>
+                            <th class="px-4 py-3 font-semibold text-gray-300 uppercase">First Name</th>
+                            <th class="px-4 py-3 font-semibold text-gray-300 uppercase">Last Name</th>
+                            <th class="px-4 py-3 font-semibold text-gray-300 uppercase">Email</th>
+                            <th class="px-4 py-3 font-semibold text-gray-300 uppercase">Manager ID</th>
+                            <th class="px-4 py-3 font-semibold text-gray-300 uppercase">Sync Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700 bg-gray-900">
+                        @foreach($employees as $employee)
+                            <tr class="hover:bg-gray-800">
+                                <td class="px-4 py-2 text-gray-100">{{ $employee->first_name }}</td>
+                                <td class="px-4 py-2 text-gray-100">{{ $employee->last_name }}</td>
+                                <td class="px-4 py-2 text-gray-100">{{ $employee->email }}</td>
+                                <td class="px-4 py-2 text-gray-100">{{ $employee->manager_id ?? 'N/A' }}</td>
+                                <td class="px-4 py-2">
+                                    @if($employee->synced_at)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-200">
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Synced {{ $employee->synced_at }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-900 text-yellow-200">
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Pending
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Pagination --}}
+            @if(method_exists($employees, 'links'))
+                <div class="mt-6">
+                    {{ $employees->links() }}
+                </div>
+            @endif
+        @else
+            <div class="mt-4 rounded-md border border-gray-700 bg-gray-800 p-6 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-300">No employees found</h3>
+                <p class="mt-1 text-sm text-gray-500">There are no employees in the system.</p>
+            </div>
+        @endif
+    </div>
 </div>
 
 @script
 <script>
 document.addEventListener('livewire:init', function () {
     Livewire.on('dashboard-created', () => {
-        // You can add a toast notification here if you have one
         console.log('Dashboard created successfully');
     });
     
     Livewire.on('dashboard-deleted', () => {
-        // You can add a toast notification here if you have one  
         console.log('Dashboard deleted successfully');
+    });
+
+    Livewire.on('job-dispatched', () => {
+        console.log('Employee data push job dispatched successfully');
     });
 });
 </script>
