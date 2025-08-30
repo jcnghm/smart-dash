@@ -1,5 +1,11 @@
-# Smart Dash - API Testing Scaffolding ⚡
+# Smart Dash - API Testing Scaffolding
 
+[![PHP Version](https://img.shields.io/badge/php-8.1%2B-blue.svg)](https://php.net)
+[![Laravel Version](https://img.shields.io/badge/laravel-10%2B%20%7C%2011%2B-red.svg)](https://laravel.com)
+[![Guzzle HTTP](https://img.shields.io/badge/guzzle-7.0%2B-orange.svg)](https://docs.guzzlephp.org/)
+[![API Testing](https://img.shields.io/badge/API-testing-green.svg)](https://laravel.com/docs/http-tests)
+[![Dashboard](https://img.shields.io/badge/dashboard-builder-purple.svg)](https://laravel.com)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
 A powerful and intuitive dashboard builder built with Laravel
 
