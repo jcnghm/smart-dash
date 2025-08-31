@@ -17,12 +17,12 @@ class DashboardOverview extends Component
     use WithPagination;
 
     public $dashboards;
-    public $apiResponse = null;
-    public $apiError = null;
-    public $jobStatus = null;
-    public $isProcessing = false;
-    public $employeeCount = 0;
-    public $unsyncedEmployeeCount = 0;
+    public $api_response = null;
+    public $api_error = null;
+    public $job_status = null;
+    public $is_processing = false;
+    public $employee_count = 0;
+    public $unsynced_count = 0;
 
     protected $paginationTheme = 'tailwind';
 
@@ -41,8 +41,8 @@ class DashboardOverview extends Component
 
     public function loadEmployeeCounts()
     {
-        $this->employeeCount = Employee::count();
-        $this->unsyncedEmployeeCount = Employee::whereNull('synced_at')->count();
+        $this->employee_count = Employee::count();
+        $this->unsynced_count = Employee::whereNull('synced_at')->count();
     }
 
     public function createNewDashboard()
@@ -81,17 +81,17 @@ class DashboardOverview extends Component
             $response = $client->getApiHealthCheck();
         
             if ($response['success']) {
-                $this->apiResponse = $response['message'];
-                $this->apiError = null;
-                Log::info('API Health Check Success', ['response' => $this->apiResponse]);
+                $this->api_response = $response['message'];
+                $this->api_error = null;
+                Log::info('API Health Check Success', ['response' => $this->api_response]);
             } else {
-                $this->apiError = $response['message'];
-                $this->apiResponse = null;
-                Log::info('API Health Check Error', ['error' => $this->apiError]);
+                $this->api_error = $response['message'];
+                $this->api_response = null;
+                Log::info('API Health Check Error', ['error' => $this->api_error]);
             }
         } catch (\Exception $e) {
-            $this->apiError = $e->getMessage();
-            $this->apiResponse = null;
+            $this->api_error = $e->getMessage();
+            $this->api_response = null;
             Log::error('API Health Check Exception', [
                 'error' => $e->getMessage(), 
                 'trace' => $e->getTraceAsString()
@@ -102,12 +102,12 @@ class DashboardOverview extends Component
     public function pushEmployeeData()
     {
         try {
-            $this->isProcessing = true;
-            $this->jobStatus = null;
+            $this->is_processing = true;
+            $this->job_status = null;
 
             if ($this->unsyncedEmployeeCount === 0) {
-                $this->jobStatus = 'No unsynced employees found to push to Rust API.';
-                $this->isProcessing = false;
+                $this->job_status = 'No unsynced employees found to push to Rust API.';
+                $this->is_processing = false;
                 return;
             }
             
@@ -120,7 +120,7 @@ class DashboardOverview extends Component
 
             SyncEmployeeData::dispatch(Auth::id(), $meta);
 
-            $this->jobStatus = "Job dispatched successfully! Pushing {$this->unsyncedEmployeeCount} unsynced employees to Rust API...";
+            $this->job_status = "Job dispatched successfully! Pushing {$this->unsyncedEmployeeCount} unsynced employees to Rust API...";
             
             Log::info('Employee data push job dispatched', array_merge($meta, [
                 'job_id' => 'unknown'
@@ -134,26 +134,26 @@ class DashboardOverview extends Component
             ]);
 
         } catch (Exception $e) {
-            $this->jobStatus = 'Error dispatching job: ' . $e->getMessage();
+            $this->job_status = 'Error dispatching job: ' . $e->getMessage();
             Log::error('Failed to dispatch employee data push job', [
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
         } finally {
-            $this->isProcessing = false;
+            $this->is_processing = false;
         }
     }
 
     public function clearJobStatus()
     {
-        $this->jobStatus = null;
+        $this->job_status = null;
     }
 
     public function clearApiResponse()
     {
-        $this->apiResponse = null;
-        $this->apiError = null;
+        $this->api_response = null;
+        $this->api_error = null;
     }
 
     public function loadEmployees()
@@ -169,11 +169,11 @@ class DashboardOverview extends Component
     public function getEmployeeStatsProperty()
     {
         return [
-            'total' => $this->employeeCount,
-            'unsynced' => $this->unsyncedEmployeeCount,
-            'synced' => $this->employeeCount - $this->unsyncedEmployeeCount,
-            'sync_percentage' => $this->employeeCount > 0 
-                ? round((($this->employeeCount - $this->unsyncedEmployeeCount) / $this->employeeCount) * 100, 1) 
+            'total' => $this->employee_count,
+            'unsynced' => $this->unsynced_count,
+            'synced' => $this->employee_count - $this->unsynced_count,
+            'sync_percentage' => $this->employee_count > 0 
+                ? round((($this->employee_count - $this->unsynced_count) / $this->employee_count) * 100, 1) 
                 : 0
         ];
     }

@@ -11,7 +11,7 @@ class DashboardView extends Component
 {
     public Dashboard $dashboard;
 
-    public function mount(Dashboard $dashboard = null)
+    public function mount(?Dashboard $dashboard = null)
     {
         if ($dashboard) {
             if ($dashboard->user_id !== Auth::id() && !$dashboard->is_public) {

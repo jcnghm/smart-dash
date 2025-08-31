@@ -2,25 +2,26 @@
 
 namespace App\Jobs;
 
+use App\Models\Employee;
+use Illuminate\Support\Arr;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use App\Models\{Employee, User};
 use App\Services\RustServerApiClient;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SyncEmployeeData implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $employee_ids;
+    protected iterable $employee_ids;
 
     public function __construct(
         protected RustServerApiClient $client, 
-        protected string $user_id, protected array 
-        $parameters = []
+        protected string $user_id, 
+        protected array $parameters = []
     ){}
 
     public function handle(): void
@@ -39,7 +40,7 @@ class SyncEmployeeData implements ShouldQueue
                 return;
             }
             
-            $data = $employees->map(function ($employee) {
+            $data = $employees->map(function (Employee $employee) {
                 return [
                     'external_id' => (string) $employee->id,
                     'first_name' => $employee->first_name,
@@ -53,7 +54,7 @@ class SyncEmployeeData implements ShouldQueue
                 'employees' => $data
             ]);
             
-            $success_count = count($response['data']['employees'] ?? []);
+            $success_count = count(Arr::get($response, 'data.employees', []));
             
             $employee_ids = $employees->pluck('id');
 

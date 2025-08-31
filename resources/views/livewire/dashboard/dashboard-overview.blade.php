@@ -14,13 +14,13 @@
                 wire:loading.attr="disabled"
                 class="inline-flex justify-center items-center px-6 py-3 bg-green-600 border border-transparent rounded-full text-sm font-semibold text-white uppercase tracking-widest hover:bg-green-700 hover:shadow-lg hover:scale-105 active:bg-green-800 active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-200 shadow-md"
                 title="Push unsynced employee records to Rust API server"
-                @if($unsyncedEmployeeCount == 0) disabled @endif
+                @if($unsynced_count == 0) disabled @endif
             >
                 <div wire:loading wire:target="pushEmployeeData" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                 <svg wire:loading.remove wire:target="pushEmployeeData" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                 </svg>
-                <span wire:loading.remove wire:target="pushEmployeeData">Push Employees ({{ $unsyncedEmployeeCount }})</span>
+                <span wire:loading.remove wire:target="pushEmployeeData">Push Employees ({{ $unsynced_count }})</span>
                 <span wire:loading wire:target="pushEmployeeData">Pushing...</span>
             </button>
 
@@ -52,7 +52,7 @@
     </div>
 
     {{-- Job Status Display --}}
-    @if($jobStatus)
+    @if($job_status)
         <div class="bg-green-900 rounded-lg border border-green-700 p-4">
             <div class="flex justify-between items-start mb-3">
                 <h3 class="text-lg font-semibold text-white flex items-center gap-2">
@@ -76,18 +76,18 @@
                 </svg>
                 <div>
                     <h4 class="text-sm font-medium text-green-300 mb-1">Processing Status</h4>
-                    <pre class="text-sm text-gray-200 whitespace-pre-wrap">{{ $jobStatus }}</pre>
+                    <pre class="text-sm text-gray-200 whitespace-pre-wrap">{{ $job_status }}</pre>
                 </div>
             </div>
         </div>
     @endif
 
     {{-- API Response Display --}}
-    @if($apiResponse || $apiError)
+    @if($api_response || $api_error)
         <div class="bg-gray-900 rounded-lg border border-gray-700 p-4">
             <div class="flex justify-between items-start mb-3">
                 <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                    <svg class="w-5 h-5 {{ $apiError ? 'text-red-600' : 'text-green-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 {{ $api_error ? 'text-red-600' : 'text-green-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     API Response
@@ -102,19 +102,19 @@
                 </button>
             </div>
             
-            @if($apiError)
+            @if($api_error)
                 <div class="flex items-start gap-3 text-red-300">
                     <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <div>
                         <h4 class="text-sm font-medium text-red-400 mb-1">Error</h4>
-                        <pre class="text-sm text-gray-200 whitespace-pre-wrap">{{ json_encode($apiError, JSON_PRETTY_PRINT) }}</pre>
+                        <pre class="text-sm text-gray-200 whitespace-pre-wrap">{{ json_encode($api_error, JSON_PRETTY_PRINT) }}</pre>
                     </div>
                 </div>
             @else
                 <div class="bg-black rounded-lg p-4 max-h-96 overflow-auto">
-                    <pre class="text-sm text-gray-200 whitespace-pre-wrap">{{ json_encode($apiResponse, JSON_PRETTY_PRINT) }}</pre>
+                    <pre class="text-sm text-gray-200 whitespace-pre-wrap">{{ json_encode($api_response, JSON_PRETTY_PRINT) }}</pre>
                 </div>
             @endif
         </div>
