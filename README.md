@@ -4,7 +4,7 @@
 [![Laravel Version](https://img.shields.io/badge/laravel-10%2B%20%7C%2011%2B-red.svg)](https://laravel.com)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
-A comprehensive Laravel-based dashboarding solution that combines visualization capabilities with API testing tools. Build custom dashboards, test external APIs, and keep your data synchronized with automated job uploads.
+A Laravel-based dashboarding solution that combines visualization capabilities with API testing tools. Build custom dashboards, test external or internal APIs, and keep your data synchronized with automated job uploads.
 
 ## Features
 
