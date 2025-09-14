@@ -2,7 +2,6 @@
 
 [![PHP Version](https://img.shields.io/badge/php-8.1%2B-blue.svg)](https://php.net)
 [![Laravel Version](https://img.shields.io/badge/laravel-10%2B%20%7C%2011%2B-red.svg)](https://laravel.com)
-[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
 A Laravel-based dashboarding solution that combines visualization capabilities with API testing tools. Build custom dashboards, test external or internal APIs, and keep your data synchronized with automated job uploads.
 
@@ -178,13 +177,6 @@ Customize the look and feel by modifying the CSS variables in `resources/css/das
 ./vendor/bin/sail npm run build
 ```
 
+## Usage
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-- **Documentation**: [Wiki](https://github.com/jcnghm/smart-dash/wiki)
-- **Issues**: [GitHub Issues](https://github.com/jcnghm/smart-dash/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/jcnghm/smart-dash/discussions)
+This project is a proof of concept.
