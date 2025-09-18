@@ -1,9 +1,14 @@
+<div align="center">
+  <img src="https://laravel.com/img/logomark.min.svg" alt="Laravel" width="100" height="100">
+
 # Laravel Dashboard & API Testing Platform
+
+A Laravel-based dashboarding solution that combines visualization capabilities with API testing tools. Build custom dashboards, test external or internal APIs, and keep your data synchronized with automated job uploads.
+
+</div>
 
 [![PHP Version](https://img.shields.io/badge/php-8.1%2B-blue.svg)](https://php.net)
 [![Laravel Version](https://img.shields.io/badge/laravel-10%2B%20%7C%2011%2B-red.svg)](https://laravel.com)
-
-A Laravel-based dashboarding solution that combines visualization capabilities with API testing tools. Build custom dashboards, test external or internal APIs, and keep your data synchronized with automated job uploads.
 
 ## Features
 
